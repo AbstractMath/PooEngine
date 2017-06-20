@@ -343,6 +343,7 @@ namespace PooEngine
         }
     }
 
+    //TODO: FBX importing
     public class meshObject : gameObject
     {
         public Vector3[] verticies;
