@@ -353,7 +353,7 @@ namespace PooEngine
         public VertexBuffer objBuffer;
         public bool visible = true;
 
-        public VertexBuffer getObjectBuffer(GraphicsDevice device)
+        public VertexBuffer getObjectBuffer(GraphicsDevice device)//Wil revise at some point
         {
             VertexPositionNormalTexture[] verts = new VertexPositionNormalTexture[triangles.Length];
 

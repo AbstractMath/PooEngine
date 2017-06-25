@@ -30,8 +30,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.pos = worldPosition;
 
 	float4 normal = mul(input.Normal, WorldInverseTranspose);
-	float intensity = dot(normal, lightDirection);
-	output.Color = saturate(AmbientColor * (AmbientIntensity + intensity));
+	float intensity = -dot(normal, lightDirection);
+	output.Color = saturate(AmbientColor * (AmbientIntensity + intensity / 4));
 
 	return output;
 }
@@ -44,7 +44,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	{
 		multiplier = 1 / depth;
 	}
-	return 4 * AmbientColor / depth;
+	return input.Color;
 }
 
 technique Ambient

@@ -2,17 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 /*
- * To do: 
- * 
- * 
- * Complete:
- * -Add a parent property w/ getters and setters for handling changing children.
- * -Add a remove method to the baseObject class.
- * -Create simple hierarchy structure.
- * -Create cube object, and add rendering code.
- * -Add shader
- * -Add drawing code the Scene class.
- * -Add child transformation inheritance from parent.
+ * NOTICE: This engine needs a massive rewrite, heres a list of stuff that I need to fix:
+ * I primarily need to fix the way VBOs are handled. 
+ * Also I need to reorganize things. Like for example, I need to have stuff in separate files. That may help clean up the code.
  */
 
 namespace PooEngine
@@ -23,6 +15,7 @@ namespace PooEngine
         Scene mainScene;
         Cube coob;
         Cube coob1;
+        Chunk testChunk;
         Effect shader;
         VertexBuffer CubeBuffer;
         MouseState originalMouseState;
@@ -40,19 +33,23 @@ namespace PooEngine
         protected override void Initialize()
         {
             mainScene = new Scene(1024f / 720f);//The scene creates it's own camera. This will probably not last.
-            coob = new Cube(shader);
-            coob1 = new Cube(shader);
-            mainScene.addChild(coob);//Just add the new cube as a child of the scene. (This is not technically required just yet, but it will be) Also, in the future you will be able to just set the objects parent.
+            testChunk = new Chunk(shader, GraphicsDevice);
+            mainScene.addChild(testChunk);
+            //testChunk.initializeBuffer(GraphicsDevice);
+            //testChunk.updateVBO();
+            //coob = new Cube(shader);
+            //coob1 = new Cube(shader);
+            //mainScene.addChild(coob);//Just add the new cube as a child of the scene. (This is not technically required just yet, but it will be) Also, in the future you will be able to just set the objects parent.
             //coob.addChild(coob1);
-            mainScene.addChild(coob1);
-            coob.Name = "Cube";
-            coob1.Name = "Cube1";
-            coob.initializeBuffer(GraphicsDevice);
-            coob1.initializeBuffer(GraphicsDevice);
-            CubeBuffer = coob.objBuffer;
+            //mainScene.addChild(coob1);
+            //coob.Name = "Cube";
+            //coob1.Name = "Cube1";
+            //coob.initializeBuffer(GraphicsDevice);
+            //coob1.initializeBuffer(GraphicsDevice);
+            //CubeBuffer = coob.objBuffer;
 
-            coob1.position = new Vector3(-4, 0, 0);
-            coob.position = new Vector3(4, 0, 0);
+            //coob1.position = new Vector3(-4, 0, 0);
+            //coob.position = new Vector3(4, 0, 0);
 
             mainScene.mainCamera.position = new Vector3(0, 0, -4);
 
@@ -65,8 +62,9 @@ namespace PooEngine
         protected override void LoadContent()
         {
             shader = Content.Load<Effect>("BasicShader");//Load in the shader.
-            coob.shader = shader;
-            coob1.shader = shader;
+            testChunk.shader = shader;
+            //coob.shader = shader;
+            //coob1.shader = shader;
         }
 
         protected override void UnloadContent()
@@ -101,6 +99,28 @@ namespace PooEngine
                     Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
                 }
 
+                if (Keyboard.GetState().IsKeyDown(Keys.R))
+                {
+                    int X, Y, Z;
+                    X = -(int)mainScene.mainCamera.position.X;
+                    Y = -(int)mainScene.mainCamera.position.Y;
+                    Z = -(int)mainScene.mainCamera.position.Z;
+
+                    for (int x = -3; x < 3; x++)
+                    {
+                        for (int y = -3; y < 3; y++)
+                        {
+                            for (int z = -3; z < 3; z++)
+                            {
+                                testChunk[X + x, Y + y, Z + z] = 0;
+                            }
+                        }
+                    }
+                    
+                    testChunk.updateVBO();
+                    testChunk.objBuffer = testChunk.getObjectBuffer(GraphicsDevice);
+                }
+
                 if (Keyboard.GetState().IsKeyDown(Keys.A))//Movement stuff
                 {
                     mainScene.mainCamera.position = mainScene.mainCamera.position + 0.05f * mainScene.mainCamera.getRightVector();
@@ -121,7 +141,7 @@ namespace PooEngine
                     mainScene.mainCamera.position = mainScene.mainCamera.position - 0.05f * mainScene.mainCamera.getForwardVector();
                 }
 
-                coob.rotation = coob.rotation * Matrix.CreateFromAxisAngle(Vector3.Normalize(new Vector3(2, 3, -1)), MathHelper.ToRadians(2f));
+                //coob.rotation = coob.rotation * Matrix.CreateFromAxisAngle(Vector3.Normalize(new Vector3(2, 3, -1)), MathHelper.ToRadians(2f));
             }
 
             base.Update(gameTime);
